@@ -1,0 +1,15 @@
+### 1. Incarca primul document (Despre Masini)
+POST http://localhost:8081/api/documents/upload?fileName=auto_news.txt
+Content-Type: text/plain
+
+The new electric vehicles have an impressive range and use advanced lithium-ion batteries for better performance.
+
+### 2. Incarca al doilea document (Despre Gatit)
+POST http://localhost:8081/api/documents/upload?fileName=cooking_tips.txt
+Content-Type: text/plain
+
+When baking a chocolate cake, make sure to use high-quality cocoa powder and room temperature eggs for a fluffy texture.
+
+### 3. TEST: Cautare Semantică (Interogare despre Transport)
+# Observa ca nu folosim cuvantul "electric" sau "vehicle", ci "transportation"
+GET http://localhost:8081/api/documents/search?query=I am looking for modern transportation methods&limit=1
