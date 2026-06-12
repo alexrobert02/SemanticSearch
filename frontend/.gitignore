@@ -18,6 +18,8 @@ backend/.mvn/wrapper/maven-wrapper.jar
 *.iws
 *.iml
 *.ipr
+node_modules
+.angular
 
 ### NetBeans ###
 /nbproject/private/

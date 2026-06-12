@@ -1,0 +1,21 @@
+<div class="search-container">
+    <h2>Upload New Document</h2>
+    <input [(ngModel)]="fileName" placeholder="File name (e.g. news.txt)">
+    <textarea [(ngModel)]="content" placeholder="Content..."></textarea>
+    <button (click)="onUpload()">Upload & Vectorize</button>
+
+    <hr>
+
+    <h2>Semantic Search</h2>
+    <div class="row">
+        <input [(ngModel)]="query" placeholder="Search concept (e.g. 'transportation')">
+        <button (click)="onSearch()">Search</button>
+    </div>
+
+    <p class="status">{{ status }}</p>
+
+    <div *ngFor="let doc of results" class="result-card">
+        <h3>{{ doc.fileName }}</h3>
+        <p>{{ doc.content }}</p>
+    </div>
+</div>

@@ -12,4 +12,4 @@ When baking a chocolate cake, make sure to use high-quality cocoa powder and roo
 
 ### 3. TEST: Cautare Semantică (Interogare despre Transport)
 # Observa ca nu folosim cuvantul "electric" sau "vehicle", ci "transportation"
-GET http://localhost:8081/api/documents/search?query=I am looking for modern transportation methods&limit=1
+GET http://localhost:8081/api/documents/search?query=sweet&limit=1

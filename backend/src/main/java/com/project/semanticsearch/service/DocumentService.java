@@ -18,7 +18,6 @@ public class DocumentService {
     public Document saveDocument(String fileName, String content) {
         float[] vectorArray = embeddingModel.embed(content).content().vector();
 
-        // Transformam float[] in formatul de text "[0.1, 0.2, ...]"
         String vectorString = Arrays.toString(vectorArray);
 
         Document doc = new Document();
