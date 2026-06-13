@@ -1,21 +1,69 @@
-<div class="search-container">
-    <h2>Upload New Document</h2>
-    <input [(ngModel)]="fileName" placeholder="File name (e.g. news.txt)">
-    <textarea [(ngModel)]="content" placeholder="Content..."></textarea>
-    <button (click)="onUpload()">Upload & Vectorize</button>
+<div class="main-wrapper">
+    <header class="app-header">
+        <h1>🧠 Semantic <span>Vault</span></h1>
+        <p>AI-Powered Document Ingestion & Vector Search</p>
+    </header>
 
-    <hr>
+    <div class="search-container">
+        <section class="glass-card">
+            <div class="card-header">
+                <span class="icon">📥</span>
+                <h2>Document Ingestion</h2>
+            </div>
 
-    <h2>Semantic Search</h2>
-    <div class="row">
-        <input [(ngModel)]="query" placeholder="Search concept (e.g. 'transportation')">
-        <button (click)="onSearch()">Search</button>
-    </div>
+            <div class="upload-grid">
+                <div class="option-box file-dropzone">
+                    <label class="custom-label">Option 1: Upload File</label>
+                    <div class="file-input-wrapper">
+                        <input type="file" id="file" (change)="onFileSelected($event)" accept=".txt">
+                        <label for="file" class="file-button">Choose .txt file</label>
+                    </div>
+                    <p *ngIf="selectedFile" class="file-info">
+                        <span class="check">✔</span> {{selectedFile.name}}
+                    </p>
+                </div>
 
-    <p class="status">{{ status }}</p>
+                <div class="vertical-divider">
+                    <span>OR</span>
+                </div>
 
-    <div *ngFor="let doc of results" class="result-card">
-        <h3>{{ doc.fileName }}</h3>
-        <p>{{ doc.content }}</p>
+                <div class="option-box">
+                    <label class="custom-label">Option 2: Manual Entry</label>
+                    <input class="modern-input" [(ngModel)]="manualFileName" placeholder="Enter document title...">
+                    <textarea class="modern-textarea" [(ngModel)]="manualContent" placeholder="Type or paste content here..."></textarea>
+                </div>
+            </div>
+
+            <button (click)="onUpload()" [disabled]="isProcessing" class="btn-primary upload-btn">
+                <span *ngIf="!isProcessing">🚀 Save to Vector DB</span>
+                <span *ngIf="isProcessing">⌛ Processing...</span>
+            </button>
+
+            <p class="status-msg" [class.error]="status.includes('❌')" *ngIf="status">
+                {{ status }}
+            </p>
+        </section>
+
+        <section class="glass-card search-section">
+            <div class="card-header">
+                <span class="icon">🔍</span>
+                <h2>Semantic Search</h2>
+            </div>
+            <div class="search-bar-wrapper">
+                <input class="modern-input search-input" [(ngModel)]="query" (keyup.enter)="onSearch()" placeholder="Ask a question or search for a concept...">
+                <button (click)="onSearch()" [disabled]="isProcessing" class="btn-search">
+                    Search
+                </button>
+            </div>
+        </section>
+
+        <div class="results-grid" *ngIf="results.length > 0">
+            <div class="result-card" *ngFor="let doc of results">
+                <div class="result-tag">Similarity Match</div>
+                <h3>📄 {{ doc.fileName }}</h3>
+                <p>{{ doc.content }}</p>
+                <div class="card-footer">Stored in Vector Store</div>
+            </div>
+        </div>
     </div>
 </div>

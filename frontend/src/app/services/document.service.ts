@@ -22,7 +22,7 @@ export class DocumentService {
         );
     }
 
-    search(query: string, limit: number = 5): Observable<Document[]> {
+    search(query: string, limit: number = 1): Observable<Document[]> {
         console.log(`[LOG] Searching for: "${query}" (limit: ${limit})`);
         const params = new HttpParams()
             .set('query', query)
@@ -34,6 +34,17 @@ export class DocumentService {
                 console.error('[LOG] Search error:', err);
                 return throwError(() => err);
             })
+        );
+    }
+
+    uploadFile(file: File): Observable<Document> {
+        const formData = new FormData();
+        // The key 'file' MUST match @RequestParam("file") in your Java Controller
+        formData.append('file', file, file.name);
+
+        return this.http.post<Document>(`${this.apiUrl}/upload-file`, formData).pipe(
+            tap(res => console.log('[LOG] Server Response:', res)),
+            catchError(err => throwError(() => err))
         );
     }
 }
