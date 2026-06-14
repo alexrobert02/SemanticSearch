@@ -1,4 +1,4 @@
-package com.project.semanticsearch.controller;
+package com.semanticsearch.backend.controller;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ProblemDetail;

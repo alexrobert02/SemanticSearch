@@ -1,4 +1,4 @@
-package com.project.semanticsearch.dto;
+package com.semanticsearch.backend.dto;
 
 public record ChunkDto(
         Long id,

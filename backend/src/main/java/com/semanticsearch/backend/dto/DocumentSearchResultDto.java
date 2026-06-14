@@ -1,4 +1,4 @@
-package com.project.semanticsearch.dto;
+package com.semanticsearch.backend.dto;
 
 import java.util.List;
 

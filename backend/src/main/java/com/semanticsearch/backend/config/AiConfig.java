@@ -1,4 +1,4 @@
-package com.project.semanticsearch.config;
+package com.semanticsearch.backend.config;
 
 import dev.langchain4j.model.embedding.EmbeddingModel;
 import dev.langchain4j.model.embedding.onnx.allminilml6v2.AllMiniLmL6V2EmbeddingModel;

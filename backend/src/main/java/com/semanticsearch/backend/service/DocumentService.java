@@ -1,14 +1,14 @@
-package com.project.semanticsearch.service;
+package com.semanticsearch.backend.service;
 
-import com.project.semanticsearch.dto.ChunkDto;
-import com.project.semanticsearch.dto.DocumentSearchResultDto;
-import com.project.semanticsearch.dto.DocumentStatsDto;
-import com.project.semanticsearch.dto.DocumentSummaryDto;
-import com.project.semanticsearch.dto.SearchResultDto;
-import com.project.semanticsearch.model.Document;
-import com.project.semanticsearch.model.DocumentChunk;
-import com.project.semanticsearch.repository.DocumentChunkRepository;
-import com.project.semanticsearch.repository.DocumentRepository;
+import com.semanticsearch.backend.dto.ChunkDto;
+import com.semanticsearch.backend.dto.DocumentSearchResultDto;
+import com.semanticsearch.backend.dto.DocumentStatsDto;
+import com.semanticsearch.backend.dto.DocumentSummaryDto;
+import com.semanticsearch.backend.dto.SearchResultDto;
+import com.semanticsearch.backend.model.Document;
+import com.semanticsearch.backend.model.DocumentChunk;
+import com.semanticsearch.backend.repository.DocumentChunkRepository;
+import com.semanticsearch.backend.repository.DocumentRepository;
 import dev.langchain4j.model.embedding.EmbeddingModel;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
@@ -28,16 +28,18 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.StringJoiner;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Service
 @RequiredArgsConstructor
 public class DocumentService {
-    private static final int CHUNK_SIZE = 900;
-    private static final int CHUNK_OVERLAP = 160;
+    private static final int CHUNK_SIZE = 700;
+    private static final int CHUNK_OVERLAP = 150;
     private static final int MIN_LIMIT = 1;
     private static final int MAX_LIMIT = 25;
     private static final int MAX_HIGHLIGHTED_SENTENCES = 2;
@@ -201,13 +203,13 @@ public class DocumentService {
         long chunkCount = chunks.size();
         long totalCharacters = chunks.stream()
                 .map(DocumentChunk::getContent)
-                .filter(content -> content != null)
+                .filter(Objects::nonNull)
                 .mapToLong(String::length)
                 .sum();
 
         LocalDateTime lastUploadedAt = documents.stream()
                 .map(Document::getUploadedAt)
-                .filter(date -> date != null)
+                .filter(Objects::nonNull)
                 .max(Comparator.naturalOrder())
                 .orElse(null);
 
@@ -599,7 +601,7 @@ public class DocumentService {
         if (query == null || query.isBlank()) {
             return List.of();
         }
-        return List.of(query.toLowerCase(Locale.ROOT).split("[^\\p{L}\\p{N}]+")).stream()
+        return Stream.of(query.toLowerCase(Locale.ROOT).split("[^\\p{L}\\p{N}]+"))
                 .filter(term -> term.length() >= 2)
                 .distinct()
                 .toList();

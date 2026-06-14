@@ -1,4 +1,4 @@
-package com.project.semanticsearch.service;
+package com.semanticsearch.backend.service;
 
 import org.apache.pdfbox.Loader;
 import org.apache.pdfbox.pdmodel.PDDocument;

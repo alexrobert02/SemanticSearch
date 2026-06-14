@@ -1,10 +1,10 @@
-package com.project.semanticsearch;
+package com.semanticsearch.backend;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
-class SemanticsearchApplicationTests {
+class SemanticSearchApplicationTests {
 
 	@Test
 	void contextLoads() {

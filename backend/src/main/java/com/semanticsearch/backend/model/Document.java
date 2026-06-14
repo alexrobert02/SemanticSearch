@@ -1,4 +1,4 @@
-package com.project.semanticsearch.model;
+package com.semanticsearch.backend.model;
 
 import jakarta.persistence.*;
 import lombok.*;

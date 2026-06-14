@@ -1,12 +1,12 @@
-package com.project.semanticsearch.controller;
+package com.semanticsearch.backend.controller;
 
-import com.project.semanticsearch.dto.ChunkDto;
-import com.project.semanticsearch.dto.DocumentSearchResultDto;
-import com.project.semanticsearch.dto.DocumentStatsDto;
-import com.project.semanticsearch.dto.DocumentSummaryDto;
-import com.project.semanticsearch.dto.SearchResultDto;
-import com.project.semanticsearch.dto.UploadDocumentRequestDto;
-import com.project.semanticsearch.service.DocumentService;
+import com.semanticsearch.backend.dto.ChunkDto;
+import com.semanticsearch.backend.dto.DocumentSearchResultDto;
+import com.semanticsearch.backend.dto.DocumentStatsDto;
+import com.semanticsearch.backend.dto.DocumentSummaryDto;
+import com.semanticsearch.backend.dto.SearchResultDto;
+import com.semanticsearch.backend.dto.UploadDocumentRequestDto;
+import com.semanticsearch.backend.service.DocumentService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;

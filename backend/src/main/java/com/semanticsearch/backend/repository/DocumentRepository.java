@@ -1,6 +1,6 @@
-package com.project.semanticsearch.repository;
+package com.semanticsearch.backend.repository;
 
-import com.project.semanticsearch.model.Document;
+import com.semanticsearch.backend.model.Document;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

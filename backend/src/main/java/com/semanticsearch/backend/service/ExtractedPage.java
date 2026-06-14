@@ -1,4 +1,4 @@
-package com.project.semanticsearch.service;
+package com.semanticsearch.backend.service;
 
 public record ExtractedPage(
         Integer pageNumber,

@@ -1,6 +1,6 @@
-package com.project.semanticsearch.repository;
+package com.semanticsearch.backend.repository;
 
-import com.project.semanticsearch.model.DocumentChunk;
+import com.semanticsearch.backend.model.DocumentChunk;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
