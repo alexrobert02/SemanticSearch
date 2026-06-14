@@ -1,69 +1,327 @@
-<div class="main-wrapper">
-    <header class="app-header">
-        <h1>🧠 Semantic <span>Vault</span></h1>
-        <p>AI-Powered Document Ingestion & Vector Search</p>
-    </header>
+<main class="workspace-shell">
+    <div class="toast" *ngIf="toastMessage" [class.success]="toastType === 'success'" [class.error]="toastType === 'error'">
+        {{ toastMessage }}
+    </div>
 
-    <div class="search-container">
-        <section class="glass-card">
-            <div class="card-header">
-                <span class="icon">📥</span>
-                <h2>Document Ingestion</h2>
-            </div>
-
-            <div class="upload-grid">
-                <div class="option-box file-dropzone">
-                    <label class="custom-label">Option 1: Upload File</label>
-                    <div class="file-input-wrapper">
-                        <input type="file" id="file" (change)="onFileSelected($event)" accept=".txt">
-                        <label for="file" class="file-button">Choose .txt file</label>
-                    </div>
-                    <p *ngIf="selectedFile" class="file-info">
-                        <span class="check">✔</span> {{selectedFile.name}}
-                    </p>
-                </div>
-
-                <div class="vertical-divider">
-                    <span>OR</span>
-                </div>
-
-                <div class="option-box">
-                    <label class="custom-label">Option 2: Manual Entry</label>
-                    <input class="modern-input" [(ngModel)]="manualFileName" placeholder="Enter document title...">
-                    <textarea class="modern-textarea" [(ngModel)]="manualContent" placeholder="Type or paste content here..."></textarea>
-                </div>
-            </div>
-
-            <button (click)="onUpload()" [disabled]="isProcessing" class="btn-primary upload-btn">
-                <span *ngIf="!isProcessing">🚀 Save to Vector DB</span>
-                <span *ngIf="isProcessing">⌛ Processing...</span>
-            </button>
-
-            <p class="status-msg" [class.error]="status.includes('❌')" *ngIf="status">
-                {{ status }}
+    <section class="hero-band">
+        <div>
+            <p class="eyebrow">Oracle AI Vector Search demo</p>
+            <h1>Semantic Search peste documente text</h1>
+            <p class="hero-copy">
+                Indexeaza fisiere PDF, TXT sau Markdown, genereaza embeddings pe chunk-uri si compara cautarea
+                semantica, keyword si hibrida intr-un singur dashboard.
             </p>
-        </section>
+        </div>
 
-        <section class="glass-card search-section">
-            <div class="card-header">
-                <span class="icon">🔍</span>
-                <h2>Semantic Search</h2>
+        <div class="stats-summary" *ngIf="stats">
+            <div class="metric">
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="M7 3h7l4 4v14H7z"></path>
+                    <path d="M14 3v5h5"></path>
+                    <path d="M10 13h6"></path>
+                    <path d="M10 17h6"></path>
+                </svg>
+                <span>{{ formatNumber(stats.documentCount) }}</span>
+                <small>documente</small>
             </div>
-            <div class="search-bar-wrapper">
-                <input class="modern-input search-input" [(ngModel)]="query" (keyup.enter)="onSearch()" placeholder="Ask a question or search for a concept...">
-                <button (click)="onSearch()" [disabled]="isProcessing" class="btn-search">
-                    Search
-                </button>
+            <div class="metric">
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="M4 5h16"></path>
+                    <path d="M4 12h16"></path>
+                    <path d="M4 19h16"></path>
+                    <path d="M7 3v4"></path>
+                    <path d="M17 10v4"></path>
+                    <path d="M11 17v4"></path>
+                </svg>
+                <span>{{ formatNumber(stats.chunkCount) }}</span>
+                <small>chunk-uri</small>
             </div>
-        </section>
-
-        <div class="results-grid" *ngIf="results.length > 0">
-            <div class="result-card" *ngFor="let doc of results">
-                <div class="result-tag">Similarity Match</div>
-                <h3>📄 {{ doc.fileName }}</h3>
-                <p>{{ doc.content }}</p>
-                <div class="card-footer">Stored in Vector Store</div>
+            <div class="metric">
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="M4 7h16"></path>
+                    <path d="M4 17h16"></path>
+                    <path d="M8 7l-2 10"></path>
+                    <path d="M16 7l2 10"></path>
+                    <path d="M10 12h4"></path>
+                </svg>
+                <span>{{ formatNumber(stats.totalCharacters) }}</span>
+                <small>caractere</small>
+            </div>
+            <div class="metric">
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="M5 19V5"></path>
+                    <path d="M5 19h14"></path>
+                    <path d="M8 15l3-3 3 2 4-6"></path>
+                </svg>
+                <span>{{ stats.averageChunksPerDocument | number:'1.1-1' }}</span>
+                <small>chunk-uri/doc</small>
             </div>
         </div>
-    </div>
-</div>
+    </section>
+
+    <section class="tool-grid">
+        <article class="panel ingestion-panel">
+            <div class="panel-heading">
+                <div>
+                    <p class="eyebrow">Incarcare</p>
+                    <h2>Adauga documente</h2>
+                </div>
+            </div>
+
+            <div class="upload-layout">
+                <label class="drop-zone" for="file-upload">
+                    <input
+                        id="file-upload"
+                        type="file"
+                        (change)="onFileSelected($event)"
+                        accept=".pdf,.txt,.md"
+                    />
+                    <strong>Fisier PDF/TXT/MD</strong>
+                    <span>{{ selectedFile ? selectedFile.name : 'Alege un fisier pentru procesare' }}</span>
+                </label>
+
+                <div class="manual-box">
+                    <label>
+                        <span>Titlu document</span>
+                        <input [(ngModel)]="manualFileName" placeholder="ex: curs-vector-search.md" />
+                    </label>
+                    <label>
+                        <span>Continut manual</span>
+                        <textarea [(ngModel)]="manualContent" placeholder="Introdu continutul documentului..."></textarea>
+                    </label>
+                </div>
+            </div>
+
+            <button type="button" class="primary-button" (click)="onUpload()" [disabled]="isUploading">
+                {{ isUploading ? 'Se indexeaza...' : 'Genereaza embeddings si salveaza' }}
+            </button>
+        </article>
+
+        <article class="panel search-panel">
+            <div class="panel-heading">
+                <div>
+                    <p class="eyebrow">Cautare</p>
+                    <h2>Cauta in documente</h2>
+                </div>
+            </div>
+
+            <div class="segmented-control" role="tablist" aria-label="Search mode">
+                <button
+                    type="button"
+                    *ngFor="let option of searchModes"
+                    [class.active]="mode === option.value"
+                    (click)="mode = option.value"
+                >
+                    {{ option.label }}
+                </button>
+            </div>
+
+            <div class="filter-row">
+                <label>
+                    <span>Filtru document</span>
+                    <select [(ngModel)]="selectedFilterDocumentId">
+                        <option [ngValue]="null">Toate documentele</option>
+                        <option *ngFor="let document of documents; trackBy: trackById" [ngValue]="document.id">
+                            {{ displayTitle(document) }}
+                        </option>
+                    </select>
+                </label>
+                <label class="toggle-row">
+                    <input type="checkbox" [(ngModel)]="aggregateByDocument" />
+                    <span>Agregare pe document</span>
+                </label>
+                <label class="toggle-row">
+                    <input type="checkbox" [(ngModel)]="rerankingEnabled" />
+                    <span>Re-ranking activ</span>
+                </label>
+            </div>
+
+            <div class="search-row">
+                <input
+                    [(ngModel)]="query"
+                    (keyup.enter)="onSearch()"
+                    placeholder="ex: scaderea consumului de apa"
+                />
+                <label class="limit-control">
+                    <span>Top</span>
+                    <input type="number" [(ngModel)]="limit" min="1" max="25" />
+                </label>
+                <button type="button" class="primary-button compact" (click)="onSearch()" [disabled]="isSearching">
+                    {{ isSearching ? 'Cauta...' : 'Cauta' }}
+                </button>
+            </div>
+
+        </article>
+    </section>
+
+    <section class="results-section" *ngIf="groupedResults.length > 0">
+        <div class="section-heading">
+            <div>
+                <p class="eyebrow">Rezultate agregate</p>
+                <h2>Documente relevante</h2>
+            </div>
+            <span class="query-pill">{{ mode }} + re-ranking</span>
+        </div>
+
+        <div class="results-list">
+            <article class="result-card document-result" *ngFor="let group of groupedResults; trackBy: trackById">
+                <div class="result-meta">
+                    <span>{{ group.sourceType }}</span>
+                    <span>{{ group.matchedChunkCount }} chunk-uri</span>
+                    <span>{{ pageLabel(group.bestPageNumber) }}</span>
+                </div>
+                <h3>{{ group.pdfTitle || group.fileName }}</h3>
+                <p class="metadata-line" *ngIf="group.pdfAuthor">Autor PDF: {{ group.pdfAuthor }}</p>
+                <div class="score-grid">
+                    <div>
+                        <small>Best score</small>
+                        <strong>{{ formatScore(group.bestScore) }}</strong>
+                    </div>
+                    <div>
+                        <small>Avg score</small>
+                        <strong>{{ formatScore(group.averageScore) }}</strong>
+                    </div>
+                    <div>
+                        <small>Top chunks</small>
+                        <strong>{{ group.topChunks.length }}</strong>
+                    </div>
+                </div>
+
+                <div class="nested-chunks">
+                    <article *ngFor="let chunk of group.topChunks; trackBy: trackById">
+                        <div class="result-meta">
+                            <span>{{ chunk.matchType }}</span>
+                            <span>chunk {{ chunk.chunkIndex }}</span>
+                            <span>{{ pageLabel(chunk.pageNumber) }}</span>
+                        </div>
+                        <p [innerHTML]="chunk.highlightedContent || chunk.content"></p>
+                    </article>
+                </div>
+            </article>
+        </div>
+    </section>
+
+    <section class="results-section" *ngIf="results.length > 0">
+        <div class="section-heading">
+            <div>
+                <p class="eyebrow">Rezultate</p>
+                <h2>Pasaje relevante</h2>
+            </div>
+            <span class="query-pill">{{ mode }} search</span>
+        </div>
+
+        <div class="results-list">
+            <article class="result-card" *ngFor="let result of results; trackBy: trackById">
+                <div class="result-meta">
+                    <span>{{ result.matchType }}</span>
+                    <span>{{ result.sourceType }}</span>
+                    <span>chunk {{ result.chunkIndex }}</span>
+                    <span>{{ pageLabel(result.pageNumber) }}</span>
+                </div>
+                <h3>{{ result.pdfTitle || result.fileName }}</h3>
+                <p class="metadata-line" *ngIf="result.pdfAuthor">Autor PDF: {{ result.pdfAuthor }}</p>
+                <p [innerHTML]="result.highlightedContent || result.content"></p>
+                <div class="score-grid">
+                    <div>
+                        <small>Semantic</small>
+                        <strong>{{ formatScore(result.semanticScore) }}</strong>
+                    </div>
+                    <div>
+                        <small>Keyword</small>
+                        <strong>{{ formatScore(result.keywordScore) }}</strong>
+                    </div>
+                    <div>
+                        <small>Final</small>
+                        <strong>{{ formatScore(result.combinedScore) }}</strong>
+                    </div>
+                </div>
+                <p class="rank-explanation">{{ result.rankExplanation }}</p>
+            </article>
+        </div>
+    </section>
+
+    <section class="corpus-layout">
+        <article class="panel">
+            <div class="section-heading">
+                <div>
+                    <p class="eyebrow">Colectie</p>
+                    <h2>Documente indexate</h2>
+                </div>
+                <span class="loading-label" *ngIf="isLoadingDashboard">Loading...</span>
+            </div>
+
+            <div class="source-chips" *ngIf="stats?.sourceTypeCounts">
+                <span *ngFor="let source of stats?.sourceTypeCounts | keyvalue">
+                    {{ source.key }}: {{ source.value }}
+                </span>
+            </div>
+
+            <div class="document-table" *ngIf="documents.length; else emptyCorpus">
+                <div class="table-row header">
+                    <span>Document</span>
+                    <span>Tip</span>
+                    <span>Metadate</span>
+                    <span>Chunk-uri</span>
+                    <span>Actiuni</span>
+                </div>
+                <div class="table-row" *ngFor="let document of documents; trackBy: trackById">
+                    <span class="document-name">
+                        {{ displayTitle(document) }}
+                        <small>{{ document.fileName }}</small>
+                    </span>
+                    <span>{{ document.sourceType }}</span>
+                    <span class="metadata-cell">
+                        <small *ngIf="document.pdfAuthor">Autor: {{ document.pdfAuthor }}</small>
+                        <small>Marime: {{ formatFileSize(document.fileSizeBytes) }}</small>
+                    </span>
+                    <span>{{ document.chunkCount }}</span>
+                    <span class="actions">
+                        <button type="button" class="icon-button subtle" (click)="viewChunks(document)" title="Vezi chunk-uri" aria-label="Vezi chunk-uri">
+                            <svg viewBox="0 0 24 24" aria-hidden="true">
+                                <path d="M2 12s3.5-6 10-6 10 6 10 6-3.5 6-10 6-10-6-10-6Z"></path>
+                                <circle cx="12" cy="12" r="3"></circle>
+                            </svg>
+                        </button>
+                        <button type="button" class="icon-button danger" (click)="deleteDocument(document)" title="Sterge document" aria-label="Sterge document">
+                            <svg viewBox="0 0 24 24" aria-hidden="true">
+                                <path d="M3 6h18"></path>
+                                <path d="M8 6V4h8v2"></path>
+                                <path d="M19 6l-1 14H6L5 6"></path>
+                                <path d="M10 11v5"></path>
+                                <path d="M14 11v5"></path>
+                            </svg>
+                        </button>
+                    </span>
+                </div>
+            </div>
+
+            <ng-template #emptyCorpus>
+                <p class="empty-state">Nu exista documente indexate inca.</p>
+            </ng-template>
+        </article>
+
+        <article class="panel chunks-panel">
+            <div class="section-heading">
+                <div>
+                    <p class="eyebrow">Chunk inspector</p>
+                    <h2>{{ selectedDocument ? selectedDocument.fileName : 'Alege un document' }}</h2>
+                </div>
+                <span class="loading-label" *ngIf="isLoadingChunks">Loading...</span>
+            </div>
+
+            <div class="chunk-list" *ngIf="selectedChunks.length; else noChunks">
+                <article class="chunk-item" *ngFor="let chunk of selectedChunks; let i = index; trackBy: trackById">
+                    <div>
+                        <strong>Chunk {{ chunk.chunkIndex }}</strong>
+                        <small>{{ pageLabel(chunk.pageNumber) }} | {{ chunk.characterCount }} caractere</small>
+                    </div>
+                    <p [innerHTML]="chunkContentHtml(chunk, i)"></p>
+                </article>
+            </div>
+
+            <ng-template #noChunks>
+                <p class="empty-state">Selecteaza un document pentru a vedea chunk-urile trimise in vector store.</p>
+            </ng-template>
+        </article>
+    </section>
+</main>

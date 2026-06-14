@@ -1,50 +1,79 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpParams } from '@angular/common/http';
-import { Observable, tap, catchError, throwError } from 'rxjs';
-import { Document } from '../models/document.model';
+import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
+import { Observable } from 'rxjs';
+import { Chunk, DocumentSearchResult, DocumentStats, DocumentSummary, SearchResult } from '../models/document.model';
 
 @Injectable({ providedIn: 'root' })
 export class DocumentService {
-    // Corrected: Removed the citation tag
-    private apiUrl = 'http://localhost:8081/api/documents';
+    private readonly apiUrl = 'http://localhost:8081/api/documents';
 
     constructor(private http: HttpClient) {}
 
-    upload(fileName: string, content: string): Observable<Document> {
-        console.log(`[LOG] Attempting upload for: ${fileName}`);
+    uploadManual(fileName: string, content: string): Observable<DocumentSummary> {
         const params = new HttpParams().set('fileName', fileName);
-        return this.http.post<Document>(`${this.apiUrl}/upload`, content, { params }).pipe(
-            tap(res => console.log('[LOG] Upload successful:', res)),
-            catchError(err => {
-                console.error('[LOG] Upload error:', err);
-                return throwError(() => err);
-            })
-        );
+        const headers = new HttpHeaders({ 'Content-Type': 'text/plain; charset=utf-8' });
+        return this.http.post<DocumentSummary>(`${this.apiUrl}/upload`, content, { params, headers });
     }
 
-    search(query: string, limit: number = 1): Observable<Document[]> {
-        console.log(`[LOG] Searching for: "${query}" (limit: ${limit})`);
-        const params = new HttpParams()
-            .set('query', query)
-            .set('limit', limit.toString());
-
-        return this.http.get<Document[]>(`${this.apiUrl}/search`, { params }).pipe(
-            tap(res => console.log(`[LOG] Search success. Found ${res.length} items.`)),
-            catchError(err => {
-                console.error('[LOG] Search error:', err);
-                return throwError(() => err);
-            })
-        );
-    }
-
-    uploadFile(file: File): Observable<Document> {
+    uploadFile(file: File): Observable<DocumentSummary> {
         const formData = new FormData();
-        // The key 'file' MUST match @RequestParam("file") in your Java Controller
         formData.append('file', file, file.name);
+        return this.http.post<DocumentSummary>(`${this.apiUrl}/upload-file`, formData);
+    }
 
-        return this.http.post<Document>(`${this.apiUrl}/upload-file`, formData).pipe(
-            tap(res => console.log('[LOG] Server Response:', res)),
-            catchError(err => throwError(() => err))
-        );
+    search(
+        query: string,
+        mode: string,
+        limit: number,
+        documentId: number | null,
+        rerank: boolean
+    ): Observable<SearchResult[]> {
+        let params = new HttpParams()
+            .set('query', query)
+            .set('mode', mode)
+            .set('limit', limit.toString())
+            .set('rerank', rerank.toString());
+
+        if (documentId) {
+            params = params.set('documentId', documentId.toString());
+        }
+
+        return this.http.get<SearchResult[]>(`${this.apiUrl}/search`, { params });
+    }
+
+    searchByDocument(
+        query: string,
+        mode: string,
+        limit: number,
+        documentId: number | null,
+        rerank: boolean
+    ): Observable<DocumentSearchResult[]> {
+        let params = new HttpParams()
+            .set('query', query)
+            .set('mode', mode)
+            .set('limit', limit.toString())
+            .set('rerank', rerank.toString());
+
+        if (documentId) {
+            params = params.set('documentId', documentId.toString());
+        }
+
+        return this.http.get<DocumentSearchResult[]>(`${this.apiUrl}/search/documents`, { params });
+    }
+
+    getStats(): Observable<DocumentStats> {
+        return this.http.get<DocumentStats>(`${this.apiUrl}/stats`);
+    }
+
+    getDocuments(): Observable<DocumentSummary[]> {
+        return this.http.get<DocumentSummary[]>(this.apiUrl);
+    }
+
+    getChunks(documentId: number): Observable<Chunk[]> {
+        return this.http.get<Chunk[]>(`${this.apiUrl}/${documentId}/chunks`);
+    }
+
+    deleteDocument(documentId: number): Observable<void> {
+        return this.http.delete<void>(`${this.apiUrl}/${documentId}`);
     }
 }

@@ -20,6 +20,9 @@ backend/.mvn/wrapper/maven-wrapper.jar
 *.ipr
 node_modules
 .angular
+.npm-cache
+.npm-logs
+ng-serve.*.log
 
 ### NetBeans ###
 /nbproject/private/
